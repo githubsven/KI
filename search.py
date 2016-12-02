@@ -148,33 +148,29 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     openSet = util.PriorityQueue()
-    openSet.push(problem.getStartState(), 0)
+    openSet.push((problem.getStartState(), []), heuristic(problem.getStartState(), problem))
     
     costSoFar = {}
     costSoFar[problem.getStartState()] = 0
-    cameFrom = {}
 
-    actions = {}
+    visited = []
+    expanded = []
+
     while not openSet.isEmpty():
-        currentState = openSet.pop()
+        currentState, actions = openSet.pop()
         if problem.isGoalState(currentState):
-            break
+            return actions
 
-        for successor, action, cost in problem.getSuccessors(currentState):
-            newCost = costSoFar[currentState] + cost
-            if successor not in costSoFar:
-                costSoFar[successor] = newCost
-                priority = newCost + heuristic(successor, problem)
-                openSet.push(successor, priority)
-                actions[successor] = action
-                cameFrom[successor] = currentState
+        if currentState not in expanded:
+            expanded.append(currentState)
 
-    data = []
-    current = currentState
-    while current != problem.getStartState():
-        data.append(actions[current])
-        current = cameFrom[current]
-    return data[::-1]
+            for successor, action, cost in problem.getSuccessors(currentState):
+                newCost = costSoFar[currentState] + cost
+                if successor not in visited:
+                    costSoFar[successor] = newCost
+                    priority = costSoFar[successor] + heuristic(successor, problem)
+                    openSet.push((successor, actions + [action]), priority)
+                    visited.append(currentState)
 
     util.raiseNotDefined()
 
