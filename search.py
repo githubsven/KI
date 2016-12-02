@@ -99,7 +99,7 @@ def depthFirstSearch(problem):
     while stack.isEmpty() == False:
         currentState, currentDirections, currentCost = stack.pop()
         if problem.isGoalState(currentState):
-            return currentDirections + [action]
+            return currentDirections
             
         if currentState not in visited:
             visited.append(currentState)
@@ -123,7 +123,7 @@ def breadthFirstSearch(problem):
     while stack.isEmpty() == False:
         currentState, currentDirections, currentCost = stack.pop()
         if problem.isGoalState(currentState):
-            return currentDirections + [action]
+            return currentDirections
             
         if currentState not in visited:
             visited.append(currentState)
@@ -141,14 +141,14 @@ def uniformCostSearch(problem):
         return []
 
     prioQ = util.PriorityQueue()
-    prioQ.push((currentState, [], [[]]), 9999999)
+    prioQ.push((currentState, [], [[]]), 0)
 
     visited = []
 
     while not prioQ.isEmpty():
         currentState, currentDirections, currentCost = prioQ.pop()
         if problem.isGoalState(currentState):
-            return currentDirections + [action]
+            return currentDirections
 
         if currentState not in visited:
             visited.append(currentState)
