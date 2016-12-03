@@ -153,7 +153,7 @@ def uniformCostSearch(problem):
             resultDirections = currentDirections
             resultCost = currentCost
 
-        if currentState not in visited:
+        if (currentState not in visited) & (not problem.isGoalState(currentState)):
             visited.append(currentState)
 
             for state, action, cost in problem.getSuccessors(currentState):
