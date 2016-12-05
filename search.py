@@ -144,7 +144,8 @@ def uniformCostSearch(problem):
     prioQ.push((currentState, [], 0), 0)
 
     visited = []
-    resultCost = 999999
+    resultCost = 9223372036854775807
+    resultDirections = []
 
     while not prioQ.isEmpty():
         currentState, currentDirections, currentCost = prioQ.pop()
@@ -153,7 +154,7 @@ def uniformCostSearch(problem):
             resultDirections = currentDirections
             resultCost = currentCost
 
-        if (currentState not in visited) & (not problem.isGoalState(currentState)):
+        if (currentState not in visited) & (not problem.isGoalState(currentState)) & (currentCost < resultCost):
             visited.append(currentState)
 
             for state, action, cost in problem.getSuccessors(currentState):
