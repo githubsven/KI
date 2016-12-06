@@ -285,7 +285,7 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
-        self.state = (self.startingPosition,[])
+        self.state = (self.startingPosition,(False,False,False,False))
         # Please add any code here which you would like to use
         # in initializing the problem
         
@@ -302,7 +302,9 @@ class CornersProblem(search.SearchProblem):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        return len(state[1])==4
+        if(state[0] in self.corners):
+            return state[1][0]==True and state[1][1]==True and state[1][2]==True and state[1][3] == True
+        return False
         #util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -326,8 +328,11 @@ class CornersProblem(search.SearchProblem):
             if not self.walls[nextx][nexty]:
                 nextState = (nextx, nexty)
                 cost = self.getCostOfActions([action])
-                if nextState in self.corners and nextState not in state[1]:
-                    nextState = (nextState,state[1]+[nextState])
+                if nextState in self.corners:
+                    lst = list(state[1])
+                    lst[self.corners.index(nextState)] = True
+                    t = tuple(lst)
+                    nextState = (nextState,t)
                 else:
                     nextState = (nextState,state[1])
                 successors.append( ( nextState, action, cost) )
@@ -363,11 +368,32 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    corners = problem.corners  # These are the corner coordinates
+    walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
+    unvisitedCorners = []
+    i = 0
+    for corner in corners:
+        if state[1][i]!=True:
+            unvisitedCorners.append(corner)
+        i +=1
+    if len(unvisitedCorners)==0:
+        return 0
+    currentPoint = state[0]
+    return getMinDistance(currentPoint,unvisitedCorners,walls)
+
+def getMinDistance(start,corners,walls):
+    distances = []
+    for corner in corners:
+        resCorners = []
+        for resCorner in corners:
+            if(resCorner!=corner):
+                resCorners.append(resCorner)
+        if(len(resCorners)>0):
+            distances.append(util.manhattanDistance(start,corner)+getMinDistance(corner,resCorners,walls))
+        else:
+            distances.append(util.manhattanDistance(start, corner))
+    return min(distances)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
