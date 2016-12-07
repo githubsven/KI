@@ -380,19 +380,17 @@ def cornersHeuristic(state, problem):
     if len(unvisitedCorners)==0:
         return 0
     currentPoint = state[0]
-    return getMinDistance(currentPoint,unvisitedCorners,walls)
+    return getMinDistance(currentPoint,unvisitedCorners)
 
-def getMinDistance(start,corners,walls):
-    distances = []
-    for corner in corners:
-        resCorners = []
-        for resCorner in corners:
-            if(resCorner!=corner):
-                resCorners.append(resCorner)
-        if(len(resCorners)>0):
-            distances.append(util.manhattanDistance(start,corner)+getMinDistance(corner,resCorners,walls))
-        else:
-            distances.append(util.manhattanDistance(start, corner))
+def getMinDistance(start,corners):
+    distance = 0
+    while len(corners)>0:   
+        corner = min(corners,key = lambda corner: util.manhattanDistance(start,corner))
+        distance += util.manhattanDistance(start,corner)
+        start = corner
+        corners.remove(corner)
+    return distance
+
     return min(distances)
 
 class AStarCornersAgent(SearchAgent):

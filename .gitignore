@@ -2,3 +2,7 @@
 *.xml
 game.pyc
 *.pyc
+*.pyc
+game.pyc
+*.pyc
+ghostAgents.pyc
