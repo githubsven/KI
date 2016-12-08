@@ -285,6 +285,7 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
+        #state consisting out of the position and a tuple of booleans which tell if the corner has already been reached
         self.state = (self.startingPosition,(False,False,False,False))
         # Please add any code here which you would like to use
         # in initializing the problem
@@ -295,17 +296,17 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
+        #self defined state
         return self.state
-        #util.raiseNotDefined()
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
+        # the check if it is a corner makes the method faster, if it is a corner, all corners should have been reached before we return true
         if(state[0] in self.corners):
-            return state[1][0]==True and state[1][1]==True and state[1][2]==True and state[1][3] == True
+            return state[1][0] and state[1][1] and state[1][2] and state[1][3]
         return False
-        #util.raiseNotDefined()
 
     def getSuccessors(self, state):
         """
@@ -328,6 +329,8 @@ class CornersProblem(search.SearchProblem):
             if not self.walls[nextx][nexty]:
                 nextState = (nextx, nexty)
                 cost = self.getCostOfActions([action])
+                #if state is a corner, update the tuple with the booleans.
+                #because we can't change a tuple we convert it to a list and back
                 if nextState in self.corners:
                     lst = list(state[1])
                     lst[self.corners.index(nextState)] = True
@@ -368,26 +371,35 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    "*** YOUR CODE HERE ***"
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
+    #get a list of all unvisited corners
     unvisitedCorners = []
     i = 0
     for corner in corners:
         if state[1][i]!=True:
             unvisitedCorners.append(corner)
         i +=1
+
     if len(unvisitedCorners)==0:
+        # this means that we reached our goal
         return 0
     currentPoint = state[0]
+    #implemented help method to calculate the cost
     return getMinDistance(currentPoint,unvisitedCorners)
 
 def getMinDistance(start,corners):
     distance = 0
-    while len(corners)>0:   
+    #each time, get the minimum distance to a corner, then remove the corner from the list.
+    #this means that we get a minimum path which is at least the fastest route possible.
+    while len(corners)>0:
+        #the closest corner from the corners list
         corner = min(corners,key = lambda corner: util.manhattanDistance(start,corner))
+        #the distance from the start to the corner
         distance += util.manhattanDistance(start,corner)
+        #change the position of the pac man
         start = corner
+        #remove the processed corner
         corners.remove(corner)
     return distance
 

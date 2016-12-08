@@ -86,35 +86,35 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
     currentState = problem.getStartState()
     if problem.isGoalState(currentState) == True:
         return []
-    
+    #dfs uses a stack, bfs is the same as this method, but instead of a stack it uses a queue
     stack = util.Stack()
     stack.push((currentState, [], []))
 
     visited = []
-
+    #keep searching until the stack is empty, or if the goal is found
     while stack.isEmpty() == False:
+        #get first option
         currentState, currentDirections, currentCost = stack.pop()
         if problem.isGoalState(currentState):
             return currentDirections
-            
+        #we keep a list visited, so we can't go back the way we came from
         if currentState not in visited:
             visited.append(currentState)
+            #push all new successors to the stack
             for state, action, cost in problem.getSuccessors(currentState):
                 stack.push((state, currentDirections + [action], currentCost + [cost]))
-
     util.raiseNotDefined()
 
+#same as dfs, so for explanation of the code see the dfs code
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
     currentState = problem.getStartState()
     if problem.isGoalState(currentState) == True:
         return []
-    
+    #same as dfs, but we use a queue. To lazy to change to variable name
     stack = util.Queue()
     stack.push((currentState, [], []))
 
