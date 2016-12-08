@@ -86,49 +86,51 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
+
+    # Grab starting state of the problem. If this state already satisfies the problem, return that no action needs to be taken
     currentState = problem.getStartState()
     if problem.isGoalState(currentState) == True:
         return []
-    #dfs uses a stack, bfs is the same as this method, but instead of a stack it uses a queue
+    # DFS uses a stack, bfs is the same as this method, but instead of a stack it uses a queue
     stack = util.Stack()
     stack.push((currentState, [], []))
 
     visited = []
     #keep searching until the stack is empty, or if the goal is found
     while stack.isEmpty() == False:
-        #get first option
+        # Get first option
         currentState, currentDirections, currentCost = stack.pop()
         if problem.isGoalState(currentState):
             return currentDirections
-        #we keep a list visited, so we can't go back the way we came from
+        # We keep a list visited, so we can't go back the way we came from
         if currentState not in visited:
             visited.append(currentState)
-            #push all new successors to the stack
+            # Push all new successors to the stack
             for state, action, cost in problem.getSuccessors(currentState):
                 stack.push((state, currentDirections + [action], currentCost + [cost]))
     util.raiseNotDefined()
 
-#same as dfs, so for explanation of the code see the dfs code
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     currentState = problem.getStartState()
     if problem.isGoalState(currentState) == True:
         return []
-    #same as dfs, but we use a queue. To lazy to change to variable name
-    stack = util.Queue()
-    stack.push((currentState, [], []))
+    # Roughly the same as DFS, but using a Queue item instead of a stack.
+    # This causes the search to traverse the tree down each branch at the same pace instead of down one branch fully before going down another
+    Queue = util.Queue()
+    Queue.push((currentState, [], []))
 
     visited = []
 
-    while stack.isEmpty() == False:
-        currentState, currentDirections, currentCost = stack.pop()
+    while Queue.isEmpty() == False:
+        currentState, currentDirections, currentCost = Queue.pop()
         if problem.isGoalState(currentState):
             return currentDirections
             
         if currentState not in visited:
             visited.append(currentState)
             for state, action, cost in problem.getSuccessors(currentState):
-                stack.push((state, currentDirections + [action], currentCost + [cost]))
+                Queue.push((state, currentDirections + [action], currentCost + [cost]))
 
     util.raiseNotDefined()
 
@@ -140,6 +142,8 @@ def uniformCostSearch(problem):
     if problem.isGoalState(currentState) == True:
         return []
 
+    # Similar to DFS and BFS, but using a priorityQueue. By linking each element in the queue to a cost, and "popping" the lowest cost first
+    # The "cheapest" path is always explored first. This results in behaviour roughly like the BFS, but taking a given "cost" into account
     prioQ = util.PriorityQueue()
     prioQ.push((currentState, [], 0), 0)
 
@@ -177,6 +181,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     openSet = util.PriorityQueue()
     openSet.push((problem.getStartState(), [],0), heuristic(problem.getStartState(), problem))
 
+    # Very similar to UCS. By using a heuristic, the cost of the path so far and the estimated cost from a node to the goal
+    # are combined to get a more accurate cost per explored node.
 
     visited = []
     expanded = []
